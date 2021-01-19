@@ -1,0 +1,38 @@
+body {
+  background-color: #fff !important;
+  font-size: 14px;
+}
+
+.mycontainer {
+    background-color: #eee !important;
+    padding: 40px !important;
+    border-radius: 15px;
+}
+
+label {
+    font-weight: bold;
+}
+
+
+fieldset legend {
+    color: black;
+    font-size: 18px;
+}
+
+
+#user-profile {
+    color: black !important;
+    font-size: 40px;
+    background-color: #eee;
+}
+
+
+.image-container{
+    width: 30%;
+    float: left;
+}
+
+.data-container{
+    width: 70%;
+    float: left;
+}

@@ -4,6 +4,11 @@ class PostsController extends AppController {
     public $helpers = array('Html', 'Form', 'Flash');
     public $components = array('Flash');
 
+        
+    public function index() {
+        $this->set('posts', $this->Post->find('all'));
+    }
+    
     public function add() {
         if ($this->request->is('post')) {
             $this->Post->create();
@@ -15,10 +20,7 @@ class PostsController extends AppController {
         }
     }
 
-    
-    public function index() {
-        $this->set('posts', $this->Post->find('all'));
-    }
+
 
     public function view($id) {
         if (!$id) {

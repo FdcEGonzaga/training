@@ -25,39 +25,82 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 		<?php echo $cakeDescription ?>:
 		<?php echo $this->fetch('title'); ?>
 	</title>
+	
 	<?php
 		echo $this->Html->meta('icon');
-
-		echo $this->Html->css('cake.generic');
 
 		echo $this->fetch('meta');
 		echo $this->fetch('css');
 		echo $this->fetch('script');
+
+		echo $this->Html->css('https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css');
+        echo $this->Html->css('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css');
+        echo $this->Html->css('//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css');
+        echo $this->Html->css('https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css');
+        echo $this->Html->css('mycss.css');
+
+		echo $this->Html->script('https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js');
+        echo $this->Html->script('https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js');   
+        echo $this->Html->script('https://code.jquery.com/ui/1.12.1/jquery-ui.js');
+        echo $this->Html->script('https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js');     
 	?>
 </head>
 <body>
 	<div id="container">
-		<div id="header">
-			<h1><?php echo $this->Html->link($cakeDescription, 'http://cakephp.org'); ?></h1>
+		<!--<div id="header">
+			<h1><?php //echo $this->Html->link($cakeDescription, 'http://cakephp.org'); ?></h1>
+		</div> -->
+
+		<!-- <?php
+		/*if (empty(AuthComponent::user('name'))){
+			echo "Please login first.";
+		}
+		else{}*/
+		?> -->
+		
+		<nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand"  href="#">Mycakephp</a>
+			</div>
+			<ul class="nav navbar-nav">
+				<li class=""><a href="#">Messages</a></li> 
+			</ul>
+			<ul class="nav navbar-nav pull-right">
+				<li><a href="#"><?php echo AuthComponent::user('name'); ?></a></li> 
+				<li>
+					<?php
+						echo $this->Html->link(
+							'Logout',
+							array('controller' => 'users', 'action' => 'logout')
+						);
+					?>
+				</li> 
+			</ul>
 		</div>
+		</nav> 
 		<div id="content">
 
-			<?php echo $this->Flash->render(); ?>
-
+			<?php echo $this->Flash->render(); ?> 
 			<?php echo $this->fetch('content'); ?>
+
 		</div>
-		<div id="footer">
-			<?php echo $this->Html->link(
+
+	 
+
+		<!--<div id="footer">
+			<?php /*
+			      echo $this->Html->link(
 					$this->Html->image('cake.power.gif', array('alt' => $cakeDescription, 'border' => '0')),
 					'http://www.cakephp.org/',
 					array('target' => '_blank', 'escape' => false, 'id' => 'cake-powered')
-				);
+				 );*/
 			?>
 			<p>
-				<?php echo $cakeVersion; ?>
+				<?php// echo $cakeVersion; ?>
 			</p>
-		</div>
+		</div>-->
 	</div>
-	<?php echo $this->element('sql_dump'); ?>
+	<?php // echo $this->element('sql_dump'); ?>
 </body>
 </html>

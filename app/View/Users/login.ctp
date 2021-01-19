@@ -1,9 +1,14 @@
-<h1>LOGIN </h1>
-<?php
+<div style="container">
+ <div class="col-md-offset-4 col-md-4">
+     <h2>LOGIN </h2>
+     <?php
+          echo $this->Form->create('User');
+          echo $this->Form->input('email', array('class'=>'form-control'));
+          echo $this->Form->input('password', array('class'=>'form-control'));
+          echo $this->Form->end('Login');
+     ?>
 
-echo $this->Form->create('Post');
-echo $this->Form->input('email');
-echo $this->Form->input('password');
-echo $this->Form->end('Save this Post');
+     <a href = "http://localhost/cakephp/users/register">Register</a>
+ </div>
 
-?>
+</div>
