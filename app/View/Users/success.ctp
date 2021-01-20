@@ -1,7 +1,13 @@
-<h1 >Hi ! <?php echo AuthComponent::user('name'); ?></h1>
 
-<button style="padding: 15px; background-color: #ada; border-radius:10px;"><?php echo $this->Html->link(
-    'Back to Homepage',
-    array('controller' => 'posts', 'action' => 'index')
-); ?>
-</button>
+<div class="col-md-offset-2 col-md-8 text-center">
+    <?php  
+        //Login greetings
+        echo $this->Flash->render();  
+    ?> 
+        <button class="btn btn-registered ">
+            <?php echo $this->Html->link(  'Back to Homepage', 
+            array('controller' => 'users' , 'action' => 'profile')); ?>
+        </button> 
+
+</div>
+ 

@@ -1,14 +1,20 @@
-<div style="container">
- <div class="col-md-offset-4 col-md-4">
-     <h2>LOGIN </h2>
+
+<div class="col-md-offset-4 col-md-4" >
+
+     <h2 class="text-center">LOGIN </h2>
      <?php
+          //error thrower
+          echo $this->Flash->render(); 
+
+          //login form 
           echo $this->Form->create('User');
           echo $this->Form->input('email', array('class'=>'form-control'));
           echo $this->Form->input('password', array('class'=>'form-control'));
-          echo $this->Form->end('Login');
+          echo "</br>";
+          echo $this->Form->end(array('class' => 'btn btn-primary signin-btn', 'label' => 'Login'));
      ?>
-
-     <a href = "http://localhost/cakephp/users/register">Register</a>
+    
+     <p class="text-center mytext-padding">Not yet Registered? 
+         <a href = "http://localhost/cakephp/users/register">Sign Up</a>
+    </p>
  </div>
-
-</div>

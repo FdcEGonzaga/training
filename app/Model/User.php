@@ -5,22 +5,19 @@ App::uses('BlowfishPasswordHasher', 'Controller/Component/Auth');
 class User extends AppModel {
     public $validate = array(
         'name' => array(
-            'required' => true,
-            'allowEmpty' => false,
             'rule' => array('lengthBetween', 5, 20),
-            'message' => 'Between 5 to 20 characters'
+            'message' => 'Name should be between 5 to 20 characters'
         ),
         'email' => array( 
             'unique' => array(
                 'rule' => 'isUnique',
-                'required' => 'create',
                 'message' => 'Email is already taken'
             )
         ),
         'password' => array(
             'required' => array(
-                'rule' => 'notBlank',
-                'message' => 'A password is required'
+                'rule' => array('minLength' , '3'),
+                'message' => 'A password is required and should be atleast 3 characters'
             )
         ),
         'password2' => array( 
@@ -28,7 +25,17 @@ class User extends AppModel {
                 'rule'      => array('validate_passwords'),
                 'message' => 'The passwords you entered do not match.',
             )
+        ),
+        'image' => array( 
+                'rule' => array(
+                    'extension', 
+                    array( 'jpg', 'png', 'gif')
+                ),
+                'message' => "Please upload a valid image jpg/png/gif files.",
+                'required' => false,
+                'allowEmpty' => true 
         )
+
 
     );
 
