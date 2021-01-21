@@ -1,15 +1,8 @@
 <?php
 
 class UsersController extends AppController {
-    public $helpers = array('Html', 'Form', 'Flash');
+    public $helpers = array('Html', 'Form', 'Flash', 'Js' => array('Jquery'));
     public $components = array('Flash');
-
-    public function beforeFilter() {
-        parent::beforeFilter();
-        $this->Auth->allow('register', 'login', 'logout');
-        date_default_timezone_set('Asia/Manila');
-    }
-
 
     //adding a user 
     public function register() {
@@ -29,6 +22,7 @@ class UsersController extends AppController {
         }
     }
 
+    //login
     public function login() {
         if ($this->request->is('post')) {
             if ($this->Auth->login()) {
@@ -42,22 +36,30 @@ class UsersController extends AppController {
             $this->Flash->error(__('Invalid username or password, try again'));
         }
     }
+
  
     public function profile() {
     }
 
     public function success() {  
     }
+
+    //users folder redirection
+    public function index() {  
+        return $this->redirect(array('action' => 'login'));
+    }
      
 
     public function edit() {
         //has any form data been posted?
-        if ($this->request->is('post')) {   // = 1     
+        if ($this->request->is('post')) {   // if true 
            
             // array to hold all new data
             $dataholder = array(); 
             $this->User->set($this->request->data);              
-        
+            // echo '<pre>';
+            // print_r(  $this->request->data );
+            // exit;
                 
                 //if gender field has a value
                 if(!empty($this->request->data['User']['gender'])){
@@ -67,9 +69,10 @@ class UsersController extends AppController {
 
                 // //if birthdate field has a value
                 if(!empty($this->request->data['User']['birthdate'])){
-                    $birthdate = date('Y-m- d', strtotime($this->request->data['User']['birthdate']));
+                    $birthdate = date('Y-m-d',strtotime($this->request->data['User']['birthdate']));
                     $dataholder['birthdate'] = "'$birthdate'"; 
                 }
+ 
 
                 // //if hubby field has a value
                 if($this->request->data['User']['hubby']) {
@@ -85,33 +88,81 @@ class UsersController extends AppController {
               
                 // validating the form
                 if($this->User->validates($this->request->data)){
-                    $name = $this->request->data['User']['name']; 
                     $usedip = $this->request->clientIp();
+                    $name = $this->request->data['User']['name']; 
 
-                    $dataholder['name'] = "'$name'";
                     $dataholder['modified_ip'] = "'$usedip'";
+                    $dataholder['name'] = "'$name'";
 
-                    //if image is not empty and if file is uploaded
-                 
+                        //if image is not empty and a photo has been selected/uploaded, explode 
+                        //and get the file name then move the uploaded file.
+                        if(!empty($this->request->data['User']['image']['tmp_name']) 
+                        && is_uploaded_file($this->request->data['User']['image']['tmp_name'])){
+                            
+                            $temp = explode('.' ,  $this->request->data['User']['image']['name']);
+                            $newFileName = 'pic'.round(time(true)).'.'.end($temp);
+                            $directory = 'myuploads/';
+                            
+                            move_uploaded_file( $this->request->data['User']['image']['tmp_name'],WWW_ROOT.DS.$directory.$newFileName
+                            );
 
-                    //updating the database using the id
-                        if($this->User->updateAll( $dataholder, array('id' => $this->Auth->user('id')))){ 
-                
-                            //refresh the session to display the changes
-                            $this->Session->write('Auth', $this->User->read(null, $this->Auth->User('id')));
-                            $user = $this->User->field('name', array($this->redirect( array('action' => 'profile'))));
+                            //assign to dataholder array
+                            $dataholder['image'] = "'$newFileName'"; 
 
-                        }else {  
-                             $this->Flash->error(__('Database not updated.'));
                         }
+
+                        
+
+                  //updating the database using the id
+                    if($this->User->updateAll( $dataholder, array('id' => $this->Auth->user('id')))){ 
+            
+                        //refresh the session to display the changes
+                        $this->Session->write('Auth', $this->User->read(null, $this->Auth->User('id')));
+                        $user = $this->User->field('name', array($this->redirect( array('action' => 'profile'))));
+
+                    }else {  
+                            $this->Flash->error(__('Database not updated.'));
+                    }
  
                 } 
 
         }
     }
 
+    //view sender name on the Message list
+    public function viewSenderPic($id){
+        $user = $this->User->findById($id);
+        if (!$user) {
+            throw new NotFoundException(__('Invalid post'));
+        }
+        $this->set('user', $user);
+    }
+ 
+    //Users list checker
+    public function userList() {
+        $result = array();
+        if($this->request->is('get')) {
+            $term = $this->request->query['searchTerm'];
+            $users = $this->User->find('all', array(
+                'conditions' => array(
+                    'User.name LIKE' => '%'.$term.'%'
+                )
+            ));
+
+            $result = array();
+            foreach($users as $key => $user) {
+                $result[$key]['id'] = (int) $user['User']['id'];
+                $result[$key]['text'] = $user['User']['name']; 
+            }
+        }
+        
+        echo json_encode($result);
+        exit;
+    }
+
     public function logout() {
         return $this->redirect($this->Auth->logout());
     }
+
 
 }

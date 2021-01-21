@@ -6,7 +6,8 @@ body {
 .mytext-padding {
   margin: 10px;
 }
- 
+  
+
 #content {
  background-color: #eee !important;
 }
@@ -18,14 +19,16 @@ form .submit .btn-primary{
 
 .btn-registered { 
   background-color: #333 !important;
-  padding: 5px 20px;
+  padding: 7px 15px;
+  color: white;
+  font-weight: 550;
   border-radius: 5px !important;
 }
 
-.btn-registered a{
-  color: white !important; 
+.btn:hover{
+  text-decoration: none;
+  color: #ddd;
 }
- 
 
 .signin-btn {
   width: 100% !important; 
@@ -39,3 +42,17 @@ h2 {
   background-color: #eee;
 }
  
+form .submit input[type=submit]:hover #float-right {
+   float:right;
+ }
+
+ .message-container {
+    padding: 20px;
+    background-color: #fff;
+    margin: 0px 0px 20px 0px; 
+    border-radius : 5px;
+ }
+
+ .message-container:hover {
+  box-shadow:#ddd 2px 5px 3px 1px;
+}

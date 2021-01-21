@@ -31,7 +31,7 @@ class User extends AppModel {
                     'extension', 
                     array( 'jpg', 'png', 'gif')
                 ),
-                'message' => "Please upload a valid image jpg/png/gif files.",
+                'message' => "Please upload a jpg, png or gif photo.",
                 'required' => false,
                 'allowEmpty' => true 
         )

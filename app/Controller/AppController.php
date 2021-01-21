@@ -32,6 +32,12 @@ App::uses('Controller', 'Controller');
  */
 class AppController extends Controller {
 
+    public function beforeFilter() {
+        parent::beforeFilter();
+        $this->Auth->allow('register', 'login', 'logout');
+        date_default_timezone_set('Asia/Manila');
+    }
+
     public $components = array(
         'Flash',
         'Session',

@@ -3,23 +3,21 @@
         
             <h2>User Profile</h2> 
 
-            <div class="col-md-4">
-                 <img src="
+            <div class="col-md-4"> 
                     <?php 
                         $default_pic = "https://moonvillageassociation.org/wp-content/uploads/2018/06/default-profile-picture1.jpg";
-                        $user_pic = AuthComponent::user('image');
-
-                        if (empty($user_image)) {
-                            echo $default_pic;
-                        } else {
-                            echo $user_pic;
-                        }
-                     ?>" 
-                     class="thumbnail" height="200" width="200" alt="Profile picture">
+                        
+                            
+                        $user_pic = AuthComponent::user('image') ? '/myuploads/'.AuthComponent::user('image') : $default_pic;
+                        echo $this->Html->image(
+                            $user_pic, 
+                            array('class' =>'image-responsive thumbnail' , 'height' => '200px', 'width' => '200px' )
+                        ); 
+                    ?>
             </div>
 
             <div class="col-md-8"> 
-                <br> 
+                 
                 <h3><?php echo AuthComponent::user('name'); ?> </h3>
                 <p>Gender: 
                     <?php  
@@ -36,7 +34,7 @@
                 </p>
                 <p>Birthdate: 
                     <?php 
-                    echo  (empty(AuthComponent::user('birthdate')) ? "Not specified" : AuthComponent::user('birthdate'))
+                     echo AuthComponent::user('birthdate') ? date('m/d/Y', strtotime(AuthComponent::user('birthdate'))) : 'Not Specified'
                      ?> 
                 </p>
                 <p>Joined:
@@ -54,8 +52,9 @@
                     </br></br>
 
                     <?php
-                        echo $this->Html->link(  'Edit', 
-                            array('action' => 'edit')
+                        echo $this->Html->link(  'Edit Profile', 
+                            array('action' => 'edit'), 
+                            array('class' => 'btn btn-registered ')
                             ) ;
                         
                     ?>  

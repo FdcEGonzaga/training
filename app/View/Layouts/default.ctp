@@ -57,13 +57,19 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 			<nav class="navbar navbar-inverse navbar-fixed-top">
 			<div class="container-fluid">
 				<div class="navbar-header">
-					<a class="navbar-brand"  href="">Mycakephp</a>
+					<a class="navbar-brand"  href="http://localhost/cakephp/users/profile">Timeline</a>
 				</div>
 
 				<?php if ($this->Session->read('Auth.User')){ ?>
 
 					<ul class="nav navbar-nav">
-					<li class=""><a href="#">Messages</a></li> 
+						<li>
+							<?php
+								echo $this->Html->link(
+									'Messages', array('controller' => 'messages', 'action' => 'index')
+								);
+							?>
+						</li> 
 					</ul>
 					<ul class="nav navbar-nav pull-right">
 						<li><a href="#"><?php echo AuthComponent::user('name'); ?></a></li> 

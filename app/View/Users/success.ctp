@@ -4,10 +4,12 @@
         //Login greetings
         echo $this->Flash->render();  
     ?> 
-        <button class="btn btn-registered ">
-            <?php echo $this->Html->link(  'Back to Homepage', 
-            array('controller' => 'users' , 'action' => 'profile')); ?>
-        </button> 
+         
+            <?php echo $this->Html->link(  
+                'Back to Homepage',   array('controller' => 'users' , 'action' => 'profile'),
+                 array('class' => 'btn btn-registered')       
+             ); ?>
+         
 
 </div>
  
