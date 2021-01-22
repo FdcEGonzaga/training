@@ -4,11 +4,9 @@
             <h2>User Profile</h2> 
 
             <div class="col-md-4"> 
-                    <?php 
-                        $default_pic = "https://moonvillageassociation.org/wp-content/uploads/2018/06/default-profile-picture1.jpg";
+                    <?php  
+                        $user_pic =   '/myuploads/'.AuthComponent::user('image')  ;  
                         
-                            
-                        $user_pic = AuthComponent::user('image') ? '/myuploads/'.AuthComponent::user('image') : $default_pic;
                         echo $this->Html->image(
                             $user_pic, 
                             array('class' =>'image-responsive thumbnail' , 'height' => '200px', 'width' => '200px' )

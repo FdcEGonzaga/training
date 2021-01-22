@@ -10,7 +10,7 @@
             <!-- Input field -->
             <div class="row">
                 <div class=" col-md-8 pull-right">
-                    <?php 
+                    <?php  
                         echo $this->Form->create('Message'); 
                         echo $this->Form->input('content', array(
                             'value' => '', 
@@ -19,24 +19,86 @@
                             'placeholder' => 'Edit your reply here...',
                             'rows' => '3'
                         )); 
-                        echo $this->Form->end( array( 'label' => 'Reply Message', 'class' => 'pull-right'));
+                        echo $this->Form->end( array( 'label' => 'Reply Message', 'class' => 'pull-right' ));
                     ?>
                 </div>
             </div>
             <hr>
 
             <!-- Messages -->    
-            <div class="message-container"> 
-                <!-- <p>Msg ID: <?php echo $message['Message']['id']; ?></p> -->
-                <!-- <p>Your ID: <?php echo $message['Message']['to_id']; ?></p> -->
+            <!-- Here's where we loop through our $messages data -->  
+            <?php foreach ($messagedetails as $message): 
+                
+                //assigning variables 
+                $user_pic =   '/myuploads/'.AuthComponent::user('image')  ;  
+                $sender_pic =   '/myuploads/'.$message['Sender']['sender_image']  ;  
+                $authorID = $message['Message']['from_id'];
+            ?>
+             
+                <div class="message-container row">
+                   
+                        <?php
+                        //if last message is from the user change placement
+                        if($authorID === AuthComponent::user('id')){
+                            echo "<div class='col-md-10 messagecontent'>";
+                                   
+                                    //Message content
+                                    echo "<small>From: <b>You</b></small><br>";
+                                    echo $this->Html->link(
+                                        $message['Message']['content'],
+                                        array('action' => 'view', $authorID)
+                                    ); 
+                                    echo "<br><br><hr>";
 
+                                    //Time sent
+                                    echo "<small class='pull-right'>Time:" . date('F j, Y h:i:A', strtotime($message['Message']['created']))." </small>"; 
+                                    // echo $this->Form->postLink(
+                                    //     'Delete',
+                                    //     array('action' => 'delete', $message['Message']['id']),
+                                    //     array('confirm' => 'Are you sure?', 'class' => 'pull-right')
+                                    // );
 
-                <p>From ID: <?php echo $message['Message']['from_id']; ?></p> 
-                <p>Content: <?php echo $message['Message']['content']; ?></p>
-                <p>Created: <?php echo $message['Message']['created']; ?></p>
-                <!--  <p><?php echo h($message['Message']['body']); ?></p> -->
+                            echo "</div>";  
+                            
+                            echo "<div class='col-md-2' style='background-color: ;' > ";
+                               
+                                    echo $this->Html->image(
+                                        $user_pic, 
+                                        array('class' =>'image-responsive thumbnail' , 'height' => '100px', 'width' => '100px' )
+                                    ); 
+                        
+                            echo "</div>";
 
-            </div>
+                        }else { 
+                            
+                            echo "<div class='col-md-2' style='background-color: ;' > ";
+                               
+                                    echo $this->Html->image(
+                                        $sender_pic, 
+                                        array('class' =>'image-responsive thumbnail' , 'height' => '100px', 'width' => '100px' )
+                                    ); 
+                                
+                            echo "</div>";
+
+                            echo "<div class='col-md-10 messagecontent'>";
+                                   
+                                    //Message content
+                                    echo "<small>From: <b>".$message['Sender']['sender_name']."<b></small><br>";
+                                    echo $this->Html->link(
+                                        $message['Message']['content'],
+                                        array('action' => 'view', $authorID)
+                                    ); 
+                                    echo "<br><br><hr>";
+
+                                    //Time sent
+                                    echo "<small class='pull-right'>Time:" . date('F j, Y h:i:A', strtotime($message['Message']['created']))." </small>"; 
+                        
+                             echo "</div>";  
+
+                        }?>    
+                </div>
+                 
+            <?php endforeach; ?> 
 
     </div>
 </div> 

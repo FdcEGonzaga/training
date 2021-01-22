@@ -71,7 +71,7 @@
                         );
                     echo $this->Form->input('id', array('type' => 'hidden' , 'value'=> AuthComponent::User('id')));
                 
-                    echo $this->Form->end('Save Post', array('class'=>'btn')); 
+                    echo $this->Form->end('Save Profile', array('class'=>'btn')); 
 
           
              

@@ -10,8 +10,9 @@ class UsersController extends AppController {
             $this->User->create();
             if ($this->User->save($this->request->data)) { 
                 if($this->Auth->login()){
-                    $ip = $this->request->clientIp();
+                    $ip = $this->request->clientIp();  
                     $this->User->saveField('created_ip', "'$ip'");
+                    $this->User->saveField('image', 'defaultpic.jpg');
                     $this->User->saveField('last_login_time', date('Y-m-d H:i:s'));
 
                     $this->Flash->success(__('Thank you for registering!'));
@@ -42,6 +43,8 @@ class UsersController extends AppController {
     }
 
     public function success() {  
+        //refresh the session to display the default image
+        $this->Session->write('Auth', $this->User->read(null, $this->Auth->User('id'))); 
     }
 
     //users folder redirection
@@ -139,7 +142,7 @@ class UsersController extends AppController {
     }
  
     //Users list checker
-    public function userList() {
+    public function usersList() {
         $result = array();
         if($this->request->is('get')) {
             $term = $this->request->query['searchTerm'];
@@ -153,6 +156,7 @@ class UsersController extends AppController {
             foreach($users as $key => $user) {
                 $result[$key]['id'] = (int) $user['User']['id'];
                 $result[$key]['text'] = $user['User']['name']; 
+                $result[$key]['image'] = $user['User']['image']; 
             }
         }
         
