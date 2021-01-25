@@ -93,7 +93,10 @@ class UsersController extends AppController {
                 if($this->User->validates($this->request->data)){
                     $usedip = $this->request->clientIp();
                     $name = $this->request->data['User']['name']; 
+                    $editedInfo = date('Y-m-d H:i:s');
 
+
+                    $dataholder['modified'] = "'$editedInfo'" ;  
                     $dataholder['modified_ip'] = "'$usedip'";
                     $dataholder['name'] = "'$name'";
 

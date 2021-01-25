@@ -62,8 +62,7 @@ $(document).ready(function() {
     }); 
 
         
-    function formatState (userdata) {
-        console.log(userdata);
+    function formatState (userdata) { 
     
         if (userdata.loading) {
             return userdata.text;

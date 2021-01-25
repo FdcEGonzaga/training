@@ -20,10 +20,11 @@ form .submit .btn-primary{
 .btn-registered { 
   background-color: #333 !important;
   padding: 7px 15px;
-  color: white;
+  color: white !important;
   font-weight: 550;
   border-radius: 5px !important;
 }
+ 
 
 .btn:hover{
   text-decoration: none;
