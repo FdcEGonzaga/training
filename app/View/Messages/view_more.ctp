@@ -1,4 +1,8 @@
- 
+ <!--
+
+    This is for loading more conversation list on the Message List view.
+
+-->
             <?php foreach ($messages as $message): 
                 
                 //assigning variables 

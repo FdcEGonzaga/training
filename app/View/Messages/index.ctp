@@ -26,7 +26,7 @@
                         <?php
                         //if last message is from the user flush right
                         if($authorID === AuthComponent::user('id')){
-                            echo "<div class='col-md-10 messagecontent'>";
+                            echo "<div class='col-md-10 messagecontent'>"; 
                                    
                                     //Message content
                                     echo "<small>You sent a message to <b>".$message['Receiver']['receiver_name']."</b></small><br>";  
@@ -37,28 +37,22 @@
                                     echo "<br><br><hr>";
 
                                     //Time sent
-                                    echo "<small>Sent:" . date('F j, Y h:i:A', strtotime($message['Message']['created']))." </small>"; 
-                                    // echo $this->Form->postLink(
-                                    //     'Delete',
-                                    //     array('action' => 'delete', $message['Message']['id']),
-                                    //     array('confirm' => 'Are you sure?', 'class' => 'pull-right')
-                                    // );
-
+                                    echo "<small>Sent:" . date('F j, Y h:i:A', strtotime($message['Message']['created']))." </small>";  
                             echo "</div>";  
                             
-                            echo "<div class='col-md-2' style='background-color: ;' > ";
-                               
+                            echo "<div class='col-md-2' style='background-color: ;' > "; 
                                     echo $this->Html->image(
                                         $user_pic, 
                                         array('class' =>'image-responsive thumbnail' , 'height' => '100px', 'width' => '100px' )
-                                    ); 
-                        
+                                    );  
+                                    echo "<button  type='button' class='delete-btn btn btn-danger pull-right' data-id="
+                                     .$authorID ." data-rec="
+                                     .$receiverID.">Delete</button>";
                             echo "</div>";
 
                         }else { 
                             
-                            echo "<div class='col-md-2'  > ";
-                               
+                            echo "<div class='col-md-2'  > ";  
                                     echo $this->Html->image(
                                         $sender_pic, 
                                         array('class' =>'image-responsive thumbnail' , 'height' => '100px', 'width' => '100px' )
@@ -74,11 +68,15 @@
                                         substr($message['Message']['content'], 0, 20)."...",
                                         array('action' => 'view', $authorID, $receiverID)
                                     );   
-                                    echo "<br><br><hr>";
+                                   
 
                                     //Time sent
-                                    echo "<small class='pull-right'>Sent:" . date('F j, Y h:i:A', strtotime($message['Message']['created']))." </small>"; 
-                        
+                                    echo "<hr><small class='pull-right'>Sent:" . date('F j, Y h:i:A', strtotime($message['Message']['created']))." </small>"; 
+                                    echo "<br>";
+                                     echo "<button  type='button' class='delete-btn btn btn-danger pull-right' data-id="
+                                     .$authorID ." data-rec="
+                                     .$receiverID.">Delete</button>";
+
                              echo "</div>";  
 
                         }?>    
@@ -101,6 +99,7 @@
 <script>
     $(document).ready(function(){
         var url = "<?php echo $this->Html->url(array('controller' => 'Messages','action' => 'viewMore')); ?>";
+        var delconvo = "<?php echo $this->Html->url(array('controller' => 'Messages', 'action' => 'deleteConversation')); ?>";
 
         $('#viewmore-btn').click(function(){
             var rowperpage = Number($('#rowperpage').val());
@@ -143,6 +142,27 @@
             }
         }); 
 
+        //deleting of 1 message
+        $(document).on("click", ".delete-btn", function(e){
+            var aid          = $(this).data('id'); 
+            var rid          = $(this).data('rec'); 
+            var container   = $(this).parents('.message-container'); 
+              
+            e.preventDefault;
+            if(confirm('Are you sure you want to delete the whole conversation ?')){  
+                
+                $.ajax({
+                    url: delconvo,  
+                    type: 'POST',
+                    data: {
+                            rid: rid,
+                            aid: aid
+                    }, success: function(){ 
+                        container.fadeOut(400);   
+                    }
+                });
+            }  
+        });
         
     });
 
