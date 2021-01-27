@@ -10,8 +10,7 @@
                 <div class=" col-md-10 pull-right">
 
                     <?php     
-                        echo $this->Form->create('Message' ); 
-                        //if logged in user is not equal to the AuthoComponent ()
+                        echo $this->Form->create('Message' );   
                         //let receiverID be the sender  
                         
                         if ( AuthComponent::user('id') != $authorID ) {
@@ -65,8 +64,7 @@
                             'placeholder' => 'Edit your reply here...',
                             'rows' => '3',
                             'required' => true
-                        )); 
-                        //echo $this->Form->end( array( 'label' => 'Reply Message', 'class' => 'pull-right', 'id' => 'reply-btn' ));
+                        ));  
                         echo $this->Form->button('Reply Message',  array ('class' => 'btn btn-registered pull-right', 'id' => 'reply-btn'));
                     ?>
                     
@@ -142,7 +140,7 @@
             </div>
 
             <?php   $totalrows = $this->Paginator->params()['count']; ?>
-            <input type="hidden" id = "rowcount"    value="0">
+            <input type="hidden" id = "rowcount"    value="0"> 
             <input type="hidden" id = "rowperpage"  value="<?php echo $rowperpage ; ?>">     
             <input type="hidden" id = "totalRows" value="<?php echo $totalrows; ?>">
             <input type="hidden" id = "authorID"    value="<?php echo $authorID ; ?>">
@@ -169,7 +167,8 @@ $(document).ready(function() {
             var authorID    = Number($('#authorID').val());
             var receiverID  = Number($('#receiverID').val());
             var rowcount    = Number($('#rowcount').val()); 
-            var totalRows   = Number($('#totalRows').val());    
+            var totalRows   = Number($('#totalRows').val());   
+            var status     = 1;  //active message status
             var rowcount    = rowcount + rowperpage; 
             var countDisplayed  = rowcount + rowperpage;
 
@@ -179,10 +178,11 @@ $(document).ready(function() {
                 $.ajax({
                     url: urlview,  
                     data: {
-                        authorID: authorID,
-                        receiverID: receiverID,
-                        rowcount:rowcount,
-                        rowperpage: rowperpage
+                        authorID    : authorID,
+                        receiverID  : receiverID,
+                        rowcount    : rowcount,
+                        rowperpage  : rowperpage,
+                        status      : status
                     },
                     beforeSend:function(){
                         $("#prevmsgs-btn").text("Viewing..."); 
@@ -219,9 +219,10 @@ $(document).ready(function() {
         $('#reply-btn').click( function(e) {
             var formauthorID    = Number($('#form-authorID').val());
             var formreceiverID  = Number($('#form-receiverID').val());
-            var formcontent     = $('#form-content').val(); 
             var rowcount        = Number($('#rowcount').val()); 
-            var rowcount        = rowcount + rowperpage; 
+            var formcontent     = $('#form-content').val(); 
+            var status          = 1;  //active message status
+            var rowcount        = rowcount + rowperpage;   
 
             e.preventDefault();
             if(formcontent != ""){
@@ -231,16 +232,18 @@ $(document).ready(function() {
                         url: urlreply, 
                         type: 'POST',   
                         data: {
-                            formauthorID : formauthorID,
+                            formauthorID    : formauthorID,
                             formreceiverID : formreceiverID,
-                            formcontent : formcontent,
-                            rowcount: rowcount,
-                            rowperpage: rowperpage  
+                            formcontent     : formcontent,
+                            rowcount        : rowcount,
+                            rowperpage      : rowperpage,
+                            status          : status
                         },
                         beforeSend:function(){
                             $("#reply-btn").text("Sending...");    
                         },
                         success: function(response) { 
+                            console.log(response);
                             setTimeout(function() { 
                                 $(".message-wrapper").html(response);  
                                 $("#reply-btn").text("Reply Message");   
@@ -259,7 +262,7 @@ $(document).ready(function() {
         $(document).on("click", ".delete-btn", function(e) {
             var id          = $(this).data('id'); 
             var container   = $(this).parents('.message-container');
-            var rowcount    = Number($('#rowcount').val());  
+            var rowcount    = Number($('#rowcount').val());   
             var rowcount    = rowcount + rowperpage; 
             var countDisplayed  = rowcount + rowperpage;
 
@@ -269,7 +272,7 @@ $(document).ready(function() {
                     url: urldelete,  
                     type: 'POST',
                     data: {
-                            id: id
+                            id     : id
                     }, success: function(){ 
                         container.fadeOut(400);  
                         if(countDisplayed >= totalRows){ 

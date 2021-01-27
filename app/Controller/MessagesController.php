@@ -1,14 +1,14 @@
 <?php
 class MessagesController extends AppController {
     public $helpers = array('Html', 'Form', 'Flash', 'Js' => array('Jquery'));
-    public $components = array('Flash', 'Paginator');
+    public $components = array('Flash', 'Paginator'); 
     
     //show all conversations from other users  
     public function index(){
                 
         $authId = AuthComponent::user('id');        
-        $rowperpage = 1;
-        
+        $rowperpage = 10;
+        $status = 1;
         $this->paginate = array(
             'Message' => array(
                 'fields' => array(
@@ -25,10 +25,11 @@ class MessagesController extends AppController {
                     (SELECT
                         MAX(messages.id)
                         FROM   messages 
-                        WHERE   (messages.from_id = {$authId} OR messages.to_id = {$authId})
+                        WHERE   (messages.from_id = {$authId} OR messages.to_id = {$authId}) AND (messages.status = 1)
                             GROUP BY
                             LEAST(from_id, to_id),
-                            GREATEST(from_id, to_id))",
+                            GREATEST(from_id, to_id)
+                    )",
                 ),
                 'joins' => array(       
                     array(
@@ -58,7 +59,8 @@ class MessagesController extends AppController {
 
     //viewing the conversation
     public function view($authorID, $receiverID){
-        $rowperpage = 2;
+        $rowperpage = 10;
+        $status = 1;
         $this->paginate = array(
             'Message' => array(
                 'fields' => array(
@@ -73,8 +75,10 @@ class MessagesController extends AppController {
                 'conditions' => array( 
                     'OR' => array (
                         array('Message.to_id' => $authorID , "Message.from_id" => $receiverID),
-                        array( 'Message.to_id' => $receiverID , "Message.from_id" => $authorID )   
-                    )                  
+                        array( 'Message.to_id' => $receiverID , "Message.from_id" => $authorID )
+                    ) ,
+                    array("Message.status" => $status )
+                                   
                 ),
                 'joins' => array(       
                     array(
@@ -106,7 +110,8 @@ class MessagesController extends AppController {
             $authId = AuthComponent::user('id');       
             $start = $_GET['rowcount']; //new value of rowcount 
             $rowcount = $_GET['rowperpage'];
-
+            $status = 1;
+            
             $this->paginate = array(
                 'Message' => array(
                     'fields' => array(
@@ -123,10 +128,11 @@ class MessagesController extends AppController {
                         (SELECT
                             MAX(messages.id)
                             FROM   messages 
-                            WHERE   (messages.from_id = {$authId} OR messages.to_id = {$authId})
+                            WHERE   (messages.from_id = {$authId} OR messages.to_id = {$authId} AND messages.status = {$status})
                                 GROUP BY
                                 LEAST(from_id, to_id),
-                                GREATEST(from_id, to_id))",
+                                GREATEST(from_id, to_id)
+                            )",
                     ),
                     'joins' => array(       
                         array(
@@ -163,10 +169,12 @@ class MessagesController extends AppController {
         $receiverId = $this->request->data['formreceiverID'];  
         $formcontent = $this->request->data['formcontent'];  
         $rowcount = $this->request->data['rowcount'];   
-
+        $status = $this->request->data['status'];   
+        
         $this->request->data['Message']['from_id'] = $authorId;
         $this->request->data['Message']['to_id'] = $receiverId; 
         $this->request->data['Message']['content'] = $formcontent; 
+        $this->request->data['Message']['status'] = $status; 
         
 
         if ($this->request->is('post')) {
@@ -187,8 +195,10 @@ class MessagesController extends AppController {
                         'conditions' => array( 
                             'OR' => array (
                                 array('Message.to_id' => $authorId , "Message.from_id" => $receiverId),
-                                array( 'Message.to_id' => $receiverId , "Message.from_id" => $authorId )   
-                            )                  
+                                array( 'Message.to_id' => $receiverId , "Message.from_id" => $authorId )
+                            ),
+                            array("Message.status" => $status ) 
+                                 
                         ),
                         'joins' => array(       
                             array(
@@ -227,6 +237,7 @@ class MessagesController extends AppController {
         $receiverID = $_GET['receiverID'];
         $start = $_GET['rowcount'];  
         $rowcount = $_GET['rowperpage'];
+        $status = 1; //active message status
                 
         $this->paginate = array(
             'Message' => array(
@@ -242,8 +253,9 @@ class MessagesController extends AppController {
                 'conditions' => array( 
                     'OR' => array (
                         array('Message.to_id' => $authorID , "Message.from_id" => $receiverID),
-                        array( 'Message.to_id' => $receiverID , "Message.from_id" => $authorID )   
-                    )                  
+                        array( 'Message.to_id' => $receiverID , "Message.from_id" => $authorID ) 
+                    ),
+                    array("Message.status" => $status )                  
                 ),
                 'joins' => array(       
                     array(
@@ -271,15 +283,16 @@ class MessagesController extends AppController {
             
     }
 
-   
-
+    
     //creating a new message
     public function add(){  
-
+        //message status if active is 1
+        $status = 1;  
         if ($this->request->is('post')) {
             $this->Message->create();
             if ($this->Message->save($this->request->data)) { 
                 $this->Message->saveField('from_id',AuthComponent::user('id')); 
+                $this->Message->saveField('status', $status); 
 
                 return $this->redirect(array('action' => 'index')); 
             }
@@ -291,20 +304,27 @@ class MessagesController extends AppController {
     //deleting messages on Message List
     public function deleteConversation() {  
         $authorId = $this->request->data['aid']; 
-        $receiverId = $this->request->data['rid'];  
-        $this->Message->deleteAll(  
+        $receiverId = $this->request->data['rid'];
+        $status = $this->request->data['status']; //active status
+        $deleted  = 2;  //deleted message status
+       
+        $this->Message->updateAll(
+            array('Message.status' => "'$deleted'"),
             array("(Message.to_id = {$authorId} AND Message.from_id = {$receiverId}) OR 
-            (Message.to_id = {$receiverId} AND Message.from_id = {$authorId}) ")
-        );   
-        exit;
+           (Message.to_id = {$receiverId} AND Message.from_id = {$authorId}) ") 
+        ); 
+        exit;  
         
     } 
  
     //deleting messages on the Message Detail 
-    public function deleteMessage() { 
- 
-        $msgId = $this->request->data['id']; 
-        $this->Message->delete($msgId);   
+    public function deleteMessage() {  
+        $msgId =  $this->request->data['id'];
+        $deleted  = 2;  //deleted message status 
+        $this->Message->updateAll(
+            array('Message.status' => "'$deleted'"),
+            array('Message.id' => $msgId) 
+        ); 
         exit;
     }
 

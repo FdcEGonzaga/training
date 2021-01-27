@@ -153,6 +153,7 @@
             var aid        = $(this).data('id'); 
             var rid        = $(this).data('rec'); 
             var container  = $(this).parents('.message-container'); 
+            var status     = 2 ; //deleted status
               
             e.preventDefault;
             if(confirm('Are you sure you want to delete the whole conversation ?')){  
@@ -161,8 +162,9 @@
                     url: delconvo,  
                     type: 'POST',
                     data: {
-                            rid : rid,
-                            aid : aid
+                            rid    : rid,
+                            aid    : aid,
+                            status : status
                     }, success: function(){ 
                         container.fadeOut(400);   
                     }
