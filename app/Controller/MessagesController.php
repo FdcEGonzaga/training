@@ -2,6 +2,104 @@
 class MessagesController extends AppController {
     public $helpers = array('Html', 'Form', 'Flash', 'Js' => array('Jquery'));
     public $components = array('Flash', 'Paginator');
+    
+    //show all conversations from other users  
+    public function index(){
+                
+        $authId = AuthComponent::user('id');        
+        $rowperpage = 1;
+        
+        $this->paginate = array(
+            'Message' => array(
+                'fields' => array(
+                    'Message.*',
+                    'Sender.id as sender_id',
+                    'Sender.name as sender_name',
+                    'Sender.image as sender_image',
+                    'Receiver.id as receiver_id',
+                    'Receiver.name as receiver_name',
+                    'Receiver.image as receiver_image'
+                ), 
+                'conditions' => array(
+                    "Message.id IN 
+                    (SELECT
+                        MAX(messages.id)
+                        FROM   messages 
+                        WHERE   (messages.from_id = {$authId} OR messages.to_id = {$authId})
+                            GROUP BY
+                            LEAST(from_id, to_id),
+                            GREATEST(from_id, to_id))",
+                ),
+                'joins' => array(       
+                    array(
+                        'type' => 'LEFT',
+                        'table' => 'users',
+                        'alias' => 'Sender',
+                        'conditions' => 'Sender.id = Message.from_id'
+                    ),
+                    array(
+                        'type' => 'LEFT',
+                        'table' => 'users',
+                        'alias' => 'Receiver',
+                        'conditions' => 'Receiver.id = Message.to_id'
+                    )
+                ),
+                'order' => 'Message.created DESC',
+                'limit' => $rowperpage
+            )
+        );
+            
+        
+        $messages = $this->paginate('Message');  
+        $this->set(compact('messages', 'rowperpage')); 
+
+    }
+
+
+    //viewing the conversation
+    public function view($authorID, $receiverID){
+        $rowperpage = 2;
+        $this->paginate = array(
+            'Message' => array(
+                'fields' => array(
+                    'Message.*',
+                    'Sender.id as sender_id',
+                    'Sender.name as sender_name',
+                    'Sender.image as sender_image',
+                    'Receiver.id as receiver_id',
+                    'Receiver.name as receiver_name',
+                    'Receiver.image as receiver_image'
+                ), 
+                'conditions' => array( 
+                    'OR' => array (
+                        array('Message.to_id' => $authorID , "Message.from_id" => $receiverID),
+                        array( 'Message.to_id' => $receiverID , "Message.from_id" => $authorID )   
+                    )                  
+                ),
+                'joins' => array(       
+                    array(
+                        'type' => 'LEFT',
+                        'table' => 'users',
+                        'alias' => 'Sender',
+                        'conditions' => 'Sender.id = Message.from_id'
+                    ),
+                    array(
+                        'type' => 'LEFT',
+                        'table' => 'users',
+                        'alias' => 'Receiver',
+                        'conditions' => 'Receiver.id = Message.to_id'
+                    )
+                ),
+                'order' => 'Message.created DESC', 
+            'limit' => $rowperpage
+            )
+            
+        );
+    
+        $messagedetails = $this->paginate('Message');   
+        $this->set(compact('authorID', 'receiverID','messagedetails', 'rowperpage'));
+
+    }
 
     //Viewing more conversations
     public function viewMore(){ 
@@ -56,95 +154,7 @@ class MessagesController extends AppController {
     }
     
 
-    //show all conversations from other users  
-    public function index(){
-            
-        $authId = AuthComponent::user('id');        
-        $rowperpage = 4;
-        
-        $this->paginate = array(
-            'Message' => array(
-                'fields' => array(
-                    'Message.*',
-                    'Sender.id as sender_id',
-                    'Sender.name as sender_name',
-                    'Sender.image as sender_image',
-                    'Receiver.id as receiver_id',
-                    'Receiver.name as receiver_name',
-                    'Receiver.image as receiver_image'
-                ), 
-                'conditions' => array(
-                    "Message.id IN 
-                    (SELECT
-                        MAX(messages.id)
-                        FROM   messages 
-                        WHERE   (messages.from_id = {$authId} OR messages.to_id = {$authId})
-                            GROUP BY
-                            LEAST(from_id, to_id),
-                            GREATEST(from_id, to_id))",
-                ),
-                'joins' => array(       
-                    array(
-                        'type' => 'LEFT',
-                        'table' => 'users',
-                        'alias' => 'Sender',
-                        'conditions' => 'Sender.id = Message.from_id'
-                    ),
-                    array(
-                        'type' => 'LEFT',
-                        'table' => 'users',
-                        'alias' => 'Receiver',
-                        'conditions' => 'Receiver.id = Message.to_id'
-                    )
-                ),
-                'order' => 'Message.created DESC',
-                'limit' => $rowperpage
-            )
-        );
-             
-        // count total number of rows    
-        $totalrows = $this->Message->find(
-            'count' , array(
-                'fields' => array(
-                    'Message.*',
-                    'Sender.id as sender_id',
-                    'Sender.name as sender_name',
-                    'Sender.image as sender_image',
-                    'Receiver.id as receiver_id',
-                    'Receiver.name as receiver_name',
-                    'Receiver.image as receiver_image'
-                ), 
-                'conditions' => array(
-                    "Message.id IN 
-                    (SELECT
-                        MAX(messages.id)
-                        FROM   messages 
-                        WHERE   (messages.from_id = {$authId} OR messages.to_id = {$authId})
-                            GROUP BY
-                            LEAST(from_id, to_id),
-                            GREATEST(from_id, to_id))",
-                ),
-                'joins' => array(       
-                    array(
-                        'type' => 'LEFT',
-                        'table' => 'users',
-                        'alias' => 'Sender',
-                        'conditions' => 'Sender.id = Message.from_id'
-                    ),
-                    array(
-                        'type' => 'LEFT',
-                        'table' => 'users',
-                        'alias' => 'Receiver',
-                        'conditions' => 'Receiver.id = Message.to_id'
-                    )
-                )
-            )
-        );
-
-        $messages = $this->paginate('Message');  
-        $this->set(compact('messages', 'rowperpage', 'totalrows')); 
- 
-    }
+    
      
     // replying action on the Message Details reply form
     public function reply(){      
@@ -210,7 +220,7 @@ class MessagesController extends AppController {
  
     }
 
-    //viewing replies on the Message details
+    //viewing the previous messages inside the conversation
     public function viewReply(){
                    
         $authorID = $_GET['authorID'];
@@ -261,51 +271,7 @@ class MessagesController extends AppController {
             
     }
 
-    //viewing the Message List conversation
-    public function view($authorID, $receiverID){
-        $rowperpage = 2;
-        $this->paginate = array(
-            'Message' => array(
-                'fields' => array(
-                    'Message.*',
-                    'Sender.id as sender_id',
-                    'Sender.name as sender_name',
-                    'Sender.image as sender_image',
-                    'Receiver.id as receiver_id',
-                    'Receiver.name as receiver_name',
-                    'Receiver.image as receiver_image'
-                ), 
-                'conditions' => array( 
-                    'OR' => array (
-                        array('Message.to_id' => $authorID , "Message.from_id" => $receiverID),
-                        array( 'Message.to_id' => $receiverID , "Message.from_id" => $authorID )   
-                    )                  
-                ),
-                'joins' => array(       
-                    array(
-                        'type' => 'LEFT',
-                        'table' => 'users',
-                        'alias' => 'Sender',
-                        'conditions' => 'Sender.id = Message.from_id'
-                    ),
-                    array(
-                        'type' => 'LEFT',
-                        'table' => 'users',
-                        'alias' => 'Receiver',
-                        'conditions' => 'Receiver.id = Message.to_id'
-                    )
-                ),
-                'order' => 'Message.created DESC', 
-               'limit' => $rowperpage
-            )
-            
-        );
-      
-        $messagedetails = $this->paginate('Message');   
-        $this->set(compact('authorID', 'receiverID','messagedetails', 'rowperpage'));
-
-    }
-
+   
 
     //creating a new message
     public function add(){  
@@ -327,8 +293,8 @@ class MessagesController extends AppController {
         $authorId = $this->request->data['aid']; 
         $receiverId = $this->request->data['rid'];  
         $this->Message->deleteAll(  
-            array("(Message.to_id = {$authorId}) OR (Message.from_id = {$receiverId}) AND 
-            (Message.to_id = {$receiverId}) OR (Message.from_id = {$authorId}) ")
+            array("(Message.to_id = {$authorId} AND Message.from_id = {$receiverId}) OR 
+            (Message.to_id = {$receiverId} AND Message.from_id = {$authorId}) ")
         );   
         exit;
         

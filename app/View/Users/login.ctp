@@ -3,7 +3,7 @@
 
      <h2 class="text-center">LOGIN </h2>
      <?php
-          //error thrower
+          //error renderer
           echo $this->Flash->render(); 
 
           //login form 
@@ -14,7 +14,7 @@
           echo $this->Form->end(array('class' => 'btn btn-primary signin-btn', 'label' => 'Login'));
      ?>
     
-     <p class="text-center mytext-padding">Not yet Registered? 
-         <a href = "http://localhost/cakephp/users/register">Sign Up</a>
+     <p class="text-center mytext-padding">Not yet Registered?  
+         <?php echo $this->Html->link('Sign Up', array( 'action' => 'register')) ;?>
     </p>
  </div>

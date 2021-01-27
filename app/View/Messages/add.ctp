@@ -1,37 +1,35 @@
 <div class="container" >
     <div class="col-md-offset-2 col-md-8" >
-        <?php
-            echo $this->Html->link('Back', array('action' => 'index'));
-        ?>
+        <!-- Back Button -->
+        <?php echo $this->Html->link('Back', array('action' => 'index'));   ?>
  
         <h2>New Message: </h2>
 
-        <?php 
- 
-
+        <?php  
         //Message form
         echo $this->Form->create('Message'); 
                 
                 echo "<label>Send To:</label>"; 
-                    echo $this->Form->input( 'to_id',
-                        array('label' => false, 
-                            'class' => 'select2class  form-control'  
-                        )
-                    );
-              
-        
+                //Recepient
+                echo $this->Form->input( 'to_id',
+                array('label' => false, 
+                        'class' => 'select2class  form-control'  
+                    )
+                );
+            
+                //Content
                 echo $this->Form->input( 'content', 
-                        array('class' => 'form-control', 
-                            'placeholder' => 'Enter your message here...'
-                        )
-                    ); 
- 
-        
+                array('class' => 'form-control', 
+                        'placeholder' => 'Enter your message here...'
+                    )
+                );  
+
         echo $this->Form->end('Send Message'); 
         ?>
 
     </div>
 </div>   
+
 
 <script type="text/javascript">
 $(document).ready(function() {
@@ -56,14 +54,14 @@ $(document).ready(function() {
             },
             cache: true
         },
-        templateResult: formatState , 
-        templateSelection: formatPic
+        templateResult      : formatState, 
+        templateSelection   : formatPic
 
     }); 
 
         
-    function formatState (userdata) { 
-    
+    function formatState (userdata) {  
+
         if (userdata.loading) {
             return userdata.text;
         }
@@ -76,6 +74,7 @@ $(document).ready(function() {
         return $container;
     };
 
+
     function formatPic(userdata) {
         var $directory = "<?php echo $this->webroot; ?>/myuploads/" ;
         var $span = $(
@@ -83,13 +82,8 @@ $(document).ready(function() {
         );
 
         return $span;
-    }
-
-    
- 
-
+    } 
 
 });
-
-
+ 
 </script>

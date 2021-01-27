@@ -1,8 +1,8 @@
-<?php
-
+<?php 
 App::uses('BlowfishPasswordHasher', 'Controller/Component/Auth');
 
 class User extends AppModel {
+
     public $validate = array(
         'name' => array(
             'rule' => array('lengthBetween', 5, 20),
@@ -35,8 +35,6 @@ class User extends AppModel {
                 'required' => false,
                 'allowEmpty' => true 
         )
-
-
     );
 
     public function validate_passwords() {
